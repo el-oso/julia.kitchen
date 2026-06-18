@@ -222,44 +222,61 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
 .run-btn:disabled       { opacity: 0.55; cursor: not-allowed; }
 .run-btn:disabled:hover { background: #2a2a2a; border-color: #555; color: #ccc; }
 
-/* ── Highlighted code view ─────────────────────────────── */
-.julia-view {
-  cursor: pointer;
+/* ── Single editable code panel (highlight + textarea overlay) ─────────── */
+.julia-code {
+  position: relative;
+  background: var(--code-bg);
 }
-.julia-view pre {
+/* Both layers MUST share identical typography & box metrics so the caret in
+   the transparent textarea lines up exactly with the highlighted text. */
+.julia-code .julia-highlight,
+.julia-code .julia-editor {
   margin: 0;
+  padding: 1rem;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  tab-size: 4;
+  white-space: pre-wrap;       /* wrap identically in both layers */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+/* Highlighted layer sits underneath and sizes the panel. */
+.julia-code .julia-highlight {
+  position: relative;
+  margin: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.julia-code .julia-highlight code.hljs,
+.julia-code .julia-highlight code {
   padding: 0;
   background: transparent;
+  font: inherit;
+  line-height: inherit;
 }
-/* Override hljs defaults to fit our layout */
-.julia-view .hljs {
-  padding: 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  background: transparent;
-  overflow-x: auto;
-}
-/* Subtle hover hint */
-.julia-view:hover .hljs {
-  background: rgba(255,255,255,0.03);
-}
-
-/* ── Edit textarea ─────────────────────────────────────── */
-.julia-editor {
-  display: block;
+/* Transparent textarea on top: invisible text, visible caret, real editing. */
+.julia-code .julia-editor {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  color: var(--code-fg);
-  background: #1a1a1a;
-  border: none;
-  border-top: 2px solid var(--julia-blue);
+  height: 100%;
+  resize: none;
   outline: none;
-  padding: 1rem;
-  resize: vertical;
-  min-height: 6rem;
-  white-space: pre;
-  tab-size: 4;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--code-fg);
+  -webkit-text-fill-color: transparent;
+  overflow: hidden;
+}
+.julia-code .julia-editor::selection {
+  background: rgba(120, 120, 255, 0.3);
+  -webkit-text-fill-color: transparent;
+}
+.julia-code:focus-within {
+  outline: 2px solid var(--julia-blue);
+  outline-offset: -2px;
 }
 
 .julia-output {

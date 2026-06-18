@@ -5,53 +5,44 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initCell(cell) {
-  const viewEl    = cell.querySelector(".julia-view");
   const editorEl  = cell.querySelector(".julia-editor");
+  const highlight = cell.querySelector(".julia-highlight");
+  const codeEl    = highlight.querySelector("code");
   const outputEl  = cell.querySelector(".julia-output");
   const stdoutEl  = outputEl.querySelector(".stdout");
   const stderrEl  = outputEl.querySelector(".stderr");
   const plotEl    = outputEl.querySelector(".plot-output");
   const plotImg   = outputEl.querySelector(".plot-img");
   const runBtn    = cell.querySelector(".run-btn");
-  const editBtn   = cell.querySelector(".edit-btn");
   const resetBtn  = cell.querySelector(".reset-btn");
 
   const original = editorEl.value;
 
-  function enterEditMode() {
-    viewEl.hidden   = true;
-    editorEl.hidden = false;
-    editorEl.focus();
-    editBtn.textContent = "✓ Done";
-  }
-
-  function leaveEditMode() {
-    // Update the highlighted view to reflect edits, then re-highlight
-    const codeEl = viewEl.querySelector("code");
-    codeEl.textContent = editorEl.value;
-    if (window.hljs) window.hljs.highlightElement(codeEl);
-    editorEl.hidden = false;  // keep textarea in DOM for value reads
-    viewEl.hidden   = false;
-    editorEl.hidden = true;
-    editBtn.textContent = "✎ Edit";
-  }
-
-  editBtn.addEventListener("click", () => {
-    if (!editorEl.hidden) {
-      leaveEditMode();
-    } else {
-      enterEditMode();
+  // Re-render the highlighted layer from the textarea's current value and keep
+  // the two boxes scroll-aligned. A trailing newline needs a padding space or
+  // the last (empty) line wouldn't render in the <pre>.
+  function syncHighlight() {
+    let src = editorEl.value;
+    if (src.endsWith("\n")) src += " ";
+    codeEl.textContent = src;
+    if (window.hljs) {
+      codeEl.removeAttribute("data-highlighted");
+      codeEl.className = "language-julia";
+      window.hljs.highlightElement(codeEl);
     }
+    highlight.scrollTop  = editorEl.scrollTop;
+    highlight.scrollLeft = editorEl.scrollLeft;
+  }
+
+  editorEl.addEventListener("input", syncHighlight);
+  editorEl.addEventListener("scroll", () => {
+    highlight.scrollTop  = editorEl.scrollTop;
+    highlight.scrollLeft = editorEl.scrollLeft;
   });
 
-  // Clicking the highlighted view also enters edit mode
-  viewEl.addEventListener("click", enterEditMode);
-
-  // ── Keyboard handling in the textarea ────────────────────────────────────
   editorEl.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault();
-      leaveEditMode();
       runBtn.click();
       return;
     }
@@ -61,9 +52,7 @@ function initCell(cell) {
       const v = editorEl.value;
       editorEl.value = v.slice(0, s) + "    " + v.slice(editorEl.selectionEnd);
       editorEl.selectionStart = editorEl.selectionEnd = s + 4;
-    }
-    if (e.key === "Escape") {
-      leaveEditMode();
+      syncHighlight();
     }
   });
 
@@ -80,9 +69,6 @@ function initCell(cell) {
     stderrEl.textContent = "";
     plotEl.hidden = true;
     plotImg.src = "";
-
-    // If in edit mode, leave it so the user sees output clearly
-    if (!editorEl.hidden) leaveEditMode();
 
     try {
       const res  = await fetch(`${RUNNER_URL}/api/run`, {
@@ -121,14 +107,14 @@ function initCell(cell) {
   // ── Reset ─────────────────────────────────────────────────────────────────
   resetBtn.addEventListener("click", () => {
     editorEl.value = original;
-    const codeEl = viewEl.querySelector("code");
-    codeEl.textContent = original;
-    if (window.hljs) window.hljs.highlightElement(codeEl);
-    if (!editorEl.hidden) leaveEditMode();
+    syncHighlight();
     outputEl.hidden = true;
     stdoutEl.textContent = "";
     stderrEl.textContent = "";
     plotEl.hidden = true;
     plotImg.src = "";
   });
+
+  // Initial highlight.
+  syncHighlight();
 }

@@ -4,15 +4,14 @@
   <div class="julia-cell-toolbar">
     <span class="julia-badge">Julia {{ $.Page.Params.julia_version | default $.Site.Params.juliaVersion }}</span>
     <button class="run-btn">&#9654; Run</button>
-    <button class="edit-btn">&#9998; Edit</button>
     <button class="reset-btn">Reset</button>
   </div>
-  {{/* Highlighted read-only view */}}
-  <div class="julia-view">
-    <pre><code class="language-julia">{{ $code }}</code></pre>
+  {{/* Single editable panel: a transparent textarea overlaid on a
+       syntax-highlighted <pre>, kept in sync by runner.js. */}}
+  <div class="julia-code">
+    <pre class="julia-highlight" aria-hidden="true"><code class="language-julia">{{ $code }}</code></pre>
+    <textarea class="julia-editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off">{{ $code }}</textarea>
   </div>
-  {{/* Plain textarea shown when editing */}}
-  <textarea class="julia-editor" hidden spellcheck="false">{{ $code }}</textarea>
   <div class="julia-output" hidden>
     <pre class="stdout"></pre>
     <pre class="stderr"></pre>
