@@ -3,7 +3,7 @@
      Base URL configurable via params.bonitoServerURL (see hugo.toml). */}}
 {{ $nb   := .Get 0 }}
 {{ $base := .Site.Params.bonitoServerURL | default "http://localhost:8773" }}
-<div class="notebook-embed">
+<div class="notebook-embed" data-pagefind-ignore>
   <iframe src="{{ $base }}/{{ $nb }}"
           title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive Bonito + WGLMakie demo{{ end }}"
           loading="lazy"

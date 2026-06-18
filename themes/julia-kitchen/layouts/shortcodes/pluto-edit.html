@@ -4,7 +4,7 @@
      Configured via params.plutoEditURL and params.plutoEditNotebook. */}}
 {{ $base := .Site.Params.plutoEditURL | default "http://localhost:1234" }}
 {{ $path := or (.Get 0) (.Site.Params.plutoEditNotebook) }}
-<p class="pluto-edit-link">
+<p class="pluto-edit-link" data-pagefind-ignore>
   <a href="{{ $base }}{{ with $path }}/open?path={{ . | urlquery }}{{ end }}"
      target="_blank" rel="noopener">Launch editable notebook&nbsp;&#8599;</a>
   <span class="pluto-edit-note">opens the live Pluto editor in a new tab</span>

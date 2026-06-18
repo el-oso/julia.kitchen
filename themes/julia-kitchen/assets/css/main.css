@@ -43,6 +43,32 @@ nav ul { display: flex; gap: 1.5rem; list-style: none; }
 nav ul a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
 nav ul a:hover { color: var(--julia-purple); }
 
+/* ── Nav search bar ───────────────────────────────────── */
+.nav-search { margin-left: auto; }
+.nav-search input {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  width: 12rem;
+  max-width: 40vw;
+}
+.nav-search input:focus {
+  outline: none;
+  border-color: var(--julia-purple);
+}
+
+/* ── Search page (Pagefind UI) ────────────────────────── */
+.search-page { min-height: 60vh; }
+.pagefind-search {
+  --pagefind-ui-primary: var(--julia-purple);
+  --pagefind-ui-font: system-ui, -apple-system, sans-serif;
+  --pagefind-ui-border-radius: var(--radius);
+  margin-top: 1.5rem;
+}
+
 /* ── Main layout ──────────────────────────────────────── */
 main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
 

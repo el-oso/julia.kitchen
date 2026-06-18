@@ -3,7 +3,7 @@
      The base URL is configurable via params.sliderServerURL (see hugo.toml). */}}
 {{ $nb   := .Get 0 }}
 {{ $base := .Site.Params.sliderServerURL | default "http://localhost:2345" }}
-<div class="notebook-embed">
+<div class="notebook-embed" data-pagefind-ignore>
   <iframe src="{{ $base }}/{{ $nb }}.html"
           title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive Julia notebook{{ end }}"
           loading="lazy"

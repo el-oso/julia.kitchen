@@ -1,18 +1,20 @@
 {{ $code := .Inner | strings.TrimSpace }}
 {{ $id := printf "cell-%s-%d" .Page.File.UniqueID .Ordinal }}
 <div class="julia-cell" id="{{ $id }}">
-  <div class="julia-cell-toolbar">
+  <div class="julia-cell-toolbar" data-pagefind-ignore>
     <span class="julia-badge">Julia {{ $.Page.Params.julia_version | default $.Site.Params.juliaVersion }}</span>
     <button class="run-btn">&#9654; Run</button>
     <button class="reset-btn">Reset</button>
   </div>
   {{/* Single editable panel: a transparent textarea overlaid on a
-       syntax-highlighted <pre>, kept in sync by runner.js. */}}
+       syntax-highlighted <pre>, kept in sync by runner.js. The highlighted
+       <pre> stays indexed (searchable code); the textarea is a duplicate so
+       it's excluded from the search index. */}}
   <div class="julia-code">
     <pre class="julia-highlight" aria-hidden="true"><code class="language-julia">{{ $code }}</code></pre>
-    <textarea class="julia-editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off">{{ $code }}</textarea>
+    <textarea class="julia-editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" data-pagefind-ignore>{{ $code }}</textarea>
   </div>
-  <div class="julia-output" hidden>
+  <div class="julia-output" hidden data-pagefind-ignore>
     <pre class="stdout"></pre>
     <pre class="stderr"></pre>
     <div class="plot-output" hidden>

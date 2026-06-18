@@ -1,8 +1,8 @@
 {{ define "main" }}
-<article class="recipe">
+<article class="recipe" data-pagefind-body>
   <header class="recipe-header">
     <h1>{{ .Title }}</h1>
-    {{ with .Params.level }}<span class="level level-{{ . }}">{{ . }}</span>{{ end }}
+    {{ with .Params.level }}<span class="level level-{{ . }}" data-pagefind-filter="level">{{ . }}</span>{{ end }}
     {{ with .Params.julia_version }}<span class="julia-version">Julia {{ . }}</span>{{ end }}
     <p class="description">{{ .Description }}</p>
   </header>
