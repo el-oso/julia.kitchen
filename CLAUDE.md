@@ -101,3 +101,8 @@ GKSwstype=nul julia --project=ci ci/run_examples.jl content/recipes/basics/varia
 - New recipes: copy `RECIPE_TEMPLATE.md` → `content/recipes/<section>/<slug>.md`;
   `julia_version: "1.12"`; each `{{< julia >}}` block must be self-contained and pass CI.
 - Sections: basics/, numerics/, plotting/.
+
+## Planned / TODO
+
+- **Recipe search bar** — client-side search over recipe titles/content that
+  works on the static host (Pagefind, or a Fuse.js + Hugo-generated JSON index).

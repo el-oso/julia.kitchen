@@ -25,9 +25,10 @@ the new state. Plot is a server-rendered GR PNG.
 ## 2. Bonito + WGLMakie
 
 A Bonito `App` (the same stack BonitoBook is built on, without the notebook
-chrome). The slider `.value` observables feed a `map` that recomputes in Julia;
-**WGLMakie** renders in the browser with WebGL and streams updates over a
-websocket — so panning/zooming the axis is also client-side interactive.
+chrome). **Edit the `y =` formula and hit Run** — it's recompiled in Julia and
+the plot updates. The slider `.value` observables feed a `map` that recomputes
+in Julia; **WGLMakie** renders in the browser with WebGL and streams updates
+over a websocket — so panning/zooming the axis is also client-side interactive.
 
 {{< bonitobook "broadcasting" "Broadcasting — Bonito + WGLMakie" >}}
 

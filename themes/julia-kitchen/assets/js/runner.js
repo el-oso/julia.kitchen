@@ -8,13 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
 // Auto-size embedded notebook iframes (Pluto / Bonito). They're cross-origin,
 // so the iframe content reports its own height via postMessage; we match the
 // message to its iframe and set the height — no inner scrollbar, grows to fit.
+// Guard against a feedback loop: setting the height changes the iframe's own
+// measured height, which echoes back as a new report. Ignore reports within a
+// tolerance of the height we last applied, and never add padding (which would
+// ratchet the height up on every echo).
+const _embedHeights = new WeakMap();
 window.addEventListener("message", (e) => {
   const d = e.data;
   if (!d || d.type !== "embed-height" || typeof d.height !== "number") return;
   document.querySelectorAll(".notebook-embed iframe").forEach((frame) => {
-    if (frame.contentWindow === e.source) {
-      frame.style.height = (d.height + 4) + "px";
-    }
+    if (frame.contentWindow !== e.source) return;
+    const applied = _embedHeights.get(frame) || 0;
+    if (Math.abs(d.height - applied) <= 8) return;   // echo / jitter → ignore
+    _embedHeights.set(frame, d.height);
+    frame.style.height = d.height + "px";
   });
 });
 
