@@ -1,0 +1,11 @@
+{{/* Embeds a live BonitoBook route in an iframe.
+     Usage: {{< bonitobook "broadcasting" "Optional iframe title" >}}
+     Base URL configurable via params.bonitoServerURL (see hugo.toml). */}}
+{{ $nb   := .Get 0 }}
+{{ $base := .Site.Params.bonitoServerURL | default "http://localhost:8773" }}
+<div class="notebook-embed">
+  <iframe src="{{ $base }}/{{ $nb }}"
+          title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive BonitoBook notebook{{ end }}"
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"></iframe>
+</div>

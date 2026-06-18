@@ -10,6 +10,8 @@ theme = "julia-kitchen"
   # Dev default below; in production set this to the deployed HTTPS host
   # (must be HTTPS or the browser blocks the iframe as mixed content).
   sliderServerURL = "http://localhost:2345"
+  # Base URL of the live BonitoBook server (WGLMakie demos). Same HTTPS caveat.
+  bonitoServerURL = "http://localhost:8773"
 
   # Giscus comments — fill in after creating the GitHub repo and installing
   # the Giscus app (https://giscus.app). Set comments = true in recipe front matter to enable.

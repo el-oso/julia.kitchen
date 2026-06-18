@@ -18,6 +18,9 @@ runner/julia-runner
 /static/notebooks/*.html
 /static/notebooks/.cache/
 
+# BonitoBook per-book working dirs (autosaves, ai prompts, meta — generated)
+notebooks/bonito/.*-bbook/
+
 # Notebook environment manifest (generated from Project.toml)
 /notebooks/env/Manifest.toml
 

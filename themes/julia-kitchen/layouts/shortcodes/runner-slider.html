@@ -1,0 +1,33 @@
+{{/* Go-runner-backed slider demo. Moving a slider substitutes its value into
+     the code template (__FREQ__ / __PHASE__) and re-runs it through the Julia
+     runner, showing the returned plot PNG. Debounced in runner.js. */}}
+<div class="runner-slider">
+  <div class="rs-controls">
+    <label class="rs-control">
+      <span class="rs-label">frequency</span>
+      <input type="range" class="rs-freq" min="0.5" max="5" step="0.5" value="1">
+      <output class="rs-freq-val">1.0</output>
+    </label>
+    <label class="rs-control">
+      <span class="rs-label">phase</span>
+      <input type="range" class="rs-phase" min="0" max="6.3" step="0.1" value="0">
+      <output class="rs-phase-val">0.0</output>
+    </label>
+  </div>
+  <textarea class="rs-code" hidden>using Plots
+x = LinRange(0, 2π, 300)
+freq  = __FREQ__
+phase = __PHASE__
+y = sin.(freq .* x .+ phase)
+plot(x, y;
+    label  = "sin.(freq .* x .+ phase)",
+    xlabel = "x", ylabel = "y",
+    ylims  = (-1.2, 1.2),
+    lw     = 2, color = :steelblue,
+    title  = "Broadcasting (Go runner)",
+    size   = (680, 280))</textarea>
+  <div class="rs-output">
+    <img class="rs-img" alt="plot output" hidden>
+    <div class="rs-status">Move a slider to render.</div>
+  </div>
+</div>

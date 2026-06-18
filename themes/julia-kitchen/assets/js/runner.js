@@ -2,7 +2,69 @@ const RUNNER_URL = window.JULIA_RUNNER_URL || "http://localhost:8080";
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".julia-cell").forEach(initCell);
+  document.querySelectorAll(".runner-slider").forEach(initSliderDemo);
 });
+
+// Slider-driven demo: re-run a parameterized code template through the Go
+// runner on each slider change (debounced) and show the returned plot PNG.
+function initSliderDemo(root) {
+  const codeTpl  = root.querySelector(".rs-code").value;
+  const freqEl   = root.querySelector(".rs-freq");
+  const phaseEl  = root.querySelector(".rs-phase");
+  const freqVal  = root.querySelector(".rs-freq-val");
+  const phaseVal = root.querySelector(".rs-phase-val");
+  const imgEl    = root.querySelector(".rs-img");
+  const statusEl = root.querySelector(".rs-status");
+
+  let timer = null;
+  let inFlight = false;
+  let pending = false;
+
+  async function render() {
+    if (inFlight) { pending = true; return; }
+    inFlight = true;
+    const t0 = performance.now();
+    const code = codeTpl
+      .replaceAll("__FREQ__", freqEl.value)
+      .replaceAll("__PHASE__", phaseEl.value);
+    try {
+      const res = await fetch(`${RUNNER_URL}/api/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        statusEl.textContent = data.error || `Server error ${res.status}`;
+      } else if (data.image_data) {
+        imgEl.src = data.image_data;
+        imgEl.hidden = false;
+        const ms = Math.round(performance.now() - t0);
+        statusEl.textContent = `rendered in ${ms} ms (server ${Math.round(data.elapsed_ms)} ms)`;
+      } else {
+        statusEl.textContent = data.stderr || "no plot returned";
+      }
+    } catch (err) {
+      statusEl.textContent = `runner unreachable at ${RUNNER_URL}`;
+    } finally {
+      inFlight = false;
+      if (pending) { pending = false; render(); }
+    }
+  }
+
+  function onInput() {
+    freqVal.textContent  = parseFloat(freqEl.value).toFixed(1);
+    phaseVal.textContent = parseFloat(phaseEl.value).toFixed(1);
+    clearTimeout(timer);
+    timer = setTimeout(render, 120);   // debounce rapid drags
+  }
+
+  freqEl.addEventListener("input", onInput);
+  phaseEl.addEventListener("input", onInput);
+
+  // Initial render.
+  render();
+}
 
 function initCell(cell) {
   const editorEl  = cell.querySelector(".julia-editor");
