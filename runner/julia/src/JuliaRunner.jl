@@ -3,6 +3,7 @@ module JuliaRunner
 using JSON
 using TypeContracts
 using Base64
+using Random
 
 # ── Result type ────────────────────────────────────────────────────────────────
 
@@ -60,6 +61,32 @@ function _capture_plot(plots)::String
     end
 end
 
+# ── Shared-state reset ───────────────────────────────────────────────────────
+
+# Each cell runs in a fresh Module, so user *variables* never leak between
+# requests. But loaded packages keep their own global state on a long-lived
+# worker — e.g. Plots' active theme, or the default global RNG — which would
+# otherwise bleed from one user into the next request on the same worker.
+# Reset the known shared globals before each cell so everyone starts clean.
+function _reset_shared_state!()
+    # Reseed the default global RNG from system entropy. A cell that doesn't set
+    # its own seed is then unaffected by the previous cell's random draws;
+    # cells that call `Random.seed!(n)` themselves still override this.
+    Random.seed!()
+
+    # Reset Plots' active theme to the default (only if Plots is loaded). This
+    # undoes a previous cell's `theme(:dark)` etc.
+    plots = _plots_module()
+    if plots !== nothing
+        try
+            Base.invokelatest(plots.theme, :default)
+        catch
+            # Older/newer Plots without `theme` — ignore.
+        end
+    end
+    return nothing
+end
+
 # ── SandboxEvaluator ───────────────────────────────────────────────────────────
 
 """
@@ -72,6 +99,10 @@ struct SandboxEvaluator <: AbstractEvaluator end
 
 function eval_code(::SandboxEvaluator, code::AbstractString)::EvalResult
     mod = Module(gensym("Cell"))
+
+    # Reset shared package globals (theme, RNG) so leftover state from a
+    # previous user on this worker can't bleed into this cell.
+    _reset_shared_state!()
 
     # Snapshot the current plot identity before running so we can tell whether
     # this cell produced a new figure (vs. a stale one from an earlier cell on
