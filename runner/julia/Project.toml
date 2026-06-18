@@ -1,0 +1,12 @@
+name = "JuliaRunner"
+uuid = "69bc6cce-ec37-458e-be56-c62bc3af9016"
+version = "0.1.0"
+authors = ["el-oso <el-oso@users.noreply.github.com>"]
+
+[deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+TypeContracts = "c7a3f1e2-84b5-4d69-9e0a-1f2b3c4d5e6f"
+
+[compat]
+JSON = "1.6.1"
+TypeContracts = "0.13.1"

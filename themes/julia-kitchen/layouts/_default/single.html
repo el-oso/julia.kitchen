@@ -1,0 +1,37 @@
+{{ define "main" }}
+<article class="recipe">
+  <header class="recipe-header">
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.level }}<span class="level level-{{ . }}">{{ . }}</span>{{ end }}
+    {{ with .Params.julia_version }}<span class="julia-version">Julia {{ . }}</span>{{ end }}
+    <p class="description">{{ .Description }}</p>
+  </header>
+
+  <div class="recipe-content">
+    {{ .Content }}
+  </div>
+
+  {{ if .Params.comments }}
+  {{ with .Site.Params.giscus }}
+  <section class="comments">
+    <h2>Comments</h2>
+    <script src="https://giscus.app/client.js"
+      data-repo="{{ .repo }}"
+      data-repo-id="{{ .repo_id }}"
+      data-category="{{ .category }}"
+      data-category-id="{{ .category_id }}"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="{{ $.Site.Language.Lang }}"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </section>
+  {{ end }}
+  {{ end }}
+</article>
+{{ end }}

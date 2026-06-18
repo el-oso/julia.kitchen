@@ -1,0 +1,222 @@
+/* ── Reset & base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --julia-purple: #9558b2;
+  --julia-red:    #cb3c33;
+  --julia-green:  #389826;
+  --julia-blue:   #4063d8;
+  --bg:           #fafafa;
+  --surface:      #ffffff;
+  --border:       #e0e0e0;
+  --text:         #1a1a1a;
+  --text-muted:   #666666;
+  --code-bg:      #272822;
+  --code-fg:      #f8f8f2;
+  --radius:       6px;
+  --font-mono:    "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ── Nav ──────────────────────────────────────────────── */
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.75rem 2rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--julia-purple);
+  text-decoration: none;
+}
+nav ul { display: flex; gap: 1.5rem; list-style: none; }
+nav ul a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+nav ul a:hover { color: var(--julia-purple); }
+
+/* ── Main layout ──────────────────────────────────────── */
+main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+/* ── Hero ─────────────────────────────────────────────── */
+.hero { text-align: center; padding: 4rem 0 3rem; }
+.hero h1 { font-size: 3rem; color: var(--julia-purple); margin-bottom: 0.75rem; }
+.hero p { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 2rem; }
+.cta {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  background: var(--julia-purple);
+  color: #fff;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+}
+.cta:hover { opacity: 0.9; }
+
+/* ── Level badges ─────────────────────────────────────── */
+.level {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius);
+  margin-left: 0.5rem;
+}
+.level-beginner     { background: #d4edda; color: #155724; }
+.level-intermediate { background: #fff3cd; color: #856404; }
+.level-advanced     { background: #f8d7da; color: #721c24; }
+
+/* ── Recipe list ──────────────────────────────────────── */
+.recipe-list ul { list-style: none; padding: 0; }
+.recipe-list li { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+.recipe-list a { font-weight: 600; color: var(--julia-purple); text-decoration: none; }
+.recipe-list p { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+/* ── Recipe single ────────────────────────────────────── */
+.recipe-header { margin-bottom: 2rem; }
+.recipe-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.julia-version {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  background: var(--border);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius);
+  margin-left: 0.5rem;
+}
+.description { color: var(--text-muted); margin-top: 0.5rem; }
+
+.recipe-content h2 { margin: 2rem 0 0.5rem; font-size: 1.4rem; }
+.recipe-content h3 { margin: 1.5rem 0 0.4rem; font-size: 1.1rem; }
+.recipe-content p  { margin-bottom: 1rem; }
+.recipe-content a  { color: var(--julia-purple); }
+
+/* ── Julia interactive code cell ─────────────────────── */
+.julia-cell {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 1.5rem 0;
+  background: var(--code-bg);
+}
+.julia-cell-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #1e1e1e;
+  border-bottom: 1px solid #444;
+}
+.julia-badge {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--julia-purple);
+  margin-right: auto;
+}
+.run-btn, .edit-btn, .reset-btn {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #555;
+  border-radius: var(--radius);
+  background: #2a2a2a;
+  color: #ccc;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+.run-btn:hover          { background: var(--julia-green); border-color: var(--julia-green); color: #fff; }
+.edit-btn:hover         { background: var(--julia-blue); border-color: var(--julia-blue); color: #fff; }
+.reset-btn:hover        { background: #444; }
+.run-btn:disabled       { opacity: 0.55; cursor: not-allowed; }
+.run-btn:disabled:hover { background: #2a2a2a; border-color: #555; color: #ccc; }
+
+/* ── Highlighted code view ─────────────────────────────── */
+.julia-view {
+  cursor: pointer;
+}
+.julia-view pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+/* Override hljs defaults to fit our layout */
+.julia-view .hljs {
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  background: transparent;
+  overflow-x: auto;
+}
+/* Subtle hover hint */
+.julia-view:hover .hljs {
+  background: rgba(255,255,255,0.03);
+}
+
+/* ── Edit textarea ─────────────────────────────────────── */
+.julia-editor {
+  display: block;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--code-fg);
+  background: #1a1a1a;
+  border: none;
+  border-top: 2px solid var(--julia-blue);
+  outline: none;
+  padding: 1rem;
+  resize: vertical;
+  min-height: 6rem;
+  white-space: pre;
+  tab-size: 4;
+}
+
+.julia-output {
+  border-top: 1px solid #444;
+  padding: 0.75rem 1rem;
+}
+.julia-output .stdout {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #a8d8a8;
+  white-space: pre-wrap;
+}
+.julia-output .stderr {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #f28b82;
+  white-space: pre-wrap;
+  margin-top: 0.25rem;
+}
+
+/* ── Notebook embed (Pluto / Bonito iframe) ───────────── */
+.notebook-embed {
+  margin: 2rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #1e1e2e;
+}
+.notebook-embed iframe {
+  width: 100%;
+  min-height: 520px;
+  border: none;
+  display: block;
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 4rem;
+}
+footer a { color: var(--julia-purple); }

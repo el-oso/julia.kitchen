@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}" />
+  {{ $css := resources.Get "css/main.css" | minify }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <a class="site-title" href="{{ .Site.BaseURL }}">julia.kitchen</a>
+      <ul>
+        <li><a href="/recipes/">Recipes</a></li>
+        {{/* language switcher: uncomment when translations are added
+      {{ range site.Languages }}
+        <li><a href="{{ .Lang }}">{{ .Label }}</a></li>
+      {{ end }}
+      */}}
+      </ul>
+    </nav>
+  </header>
+  <main>
+    {{ block "main" . }}{{ end }}
+  </main>
+  <footer>
+    <p>julia.kitchen — community recipes for the <a href="https://julialang.org">Julia language</a></p>
+  </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/julia.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".julia-view code").forEach(el => hljs.highlightElement(el));
+    });
+  </script>
+  <script src="/js/runner.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+baseURL = "https://julia.kitchen/"
+locale = "en-us"
+title = "julia.kitchen"
+theme = "julia-kitchen"
+
+[params]
+  description = "Recipes for Julia programmers — from basics to advanced"
+  juliaVersion = "1.10"
+
+  # Giscus comments — fill in after creating the GitHub repo and installing
+  # the Giscus app (https://giscus.app). Set comments = true in recipe front matter to enable.
+  [params.giscus]
+    repo        = "OWNER/julia.kitchen"   # e.g. "myuser/julia.kitchen"
+    repo_id     = "REPO_ID"              # from giscus.app
+    category    = "Recipe Comments"
+    category_id = "CATEGORY_ID"         # from giscus.app
+
+[markup.highlight]
+  style = "monokai"
+  lineNos = false
+  codeFences = true
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+# i18n infrastructure is in place; add language blocks here when translations are ready
+[languages]
+  [languages.en]
+    label = "English"
+    weight = 1
+    contentDir = "content"
+
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  level = "levels"

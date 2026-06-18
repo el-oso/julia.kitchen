@@ -1,0 +1,15 @@
+{{ define "main" }}
+<section class="recipe-list">
+  <h1>{{ .Title }}</h1>
+  {{ with .Content }}<div class="intro">{{ . }}</div>{{ end }}
+  <ul>
+    {{ range .Pages.ByParam "weight" }}
+    <li>
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      {{ with .Params.level }}<span class="level level-{{ . }}">{{ . }}</span>{{ end }}
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}

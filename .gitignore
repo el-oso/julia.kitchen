@@ -1,0 +1,28 @@
+# Hugo build output
+/public/
+/resources/_gen/
+/.hugo_build.lock
+
+# Julia
+Manifest.toml
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+/runner/julia/Manifest.toml
+
+# Go
+/runner/julia-runner
+runner/julia-runner
+
+# Notebooks baked output (generated, not source)
+/static/notebooks/*.html
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,16 @@
+{{ define "main" }}
+<section class="hero">
+  <h1>julia.kitchen</h1>
+  <p>Recipes for the <a href="https://julialang.org">Julia programming language</a> — from basics to advanced.</p>
+  <a href="/recipes/" class="cta">Browse Recipes</a>
+</section>
+
+<section class="categories">
+  {{ range .Site.Taxonomies.categories.ByCount }}
+  <div class="category-card">
+    <h2><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a></h2>
+    <p>{{ len .Pages }} recipes</p>
+  </div>
+  {{ end }}
+</section>
+{{ end }}
