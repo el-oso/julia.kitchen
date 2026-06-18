@@ -16,6 +16,10 @@ runner/julia-runner
 
 # Notebooks baked output (generated, not source)
 /static/notebooks/*.html
+/static/notebooks/.cache/
+
+# Notebook environment manifest (generated from Project.toml)
+/notebooks/env/Manifest.toml
 
 # OS
 .DS_Store
