@@ -22,6 +22,7 @@ RUN julia --project=. -e '
     Pkg.add([
         "PackageCompiler",
         "Plots",
+        "StatsPlots",
         "DataFrames",
         "Statistics",
         "LinearAlgebra",
@@ -29,7 +30,7 @@ RUN julia --project=. -e '
     ])
     using PackageCompiler
     create_sysimage(
-        [:JSON3, :Plots, :DataFrames, :Statistics, :LinearAlgebra, :StatsBase],
+        [:JSON, :Plots, :StatsPlots, :DataFrames, :Statistics, :LinearAlgebra, :StatsBase],
         sysimage_path = "/sysimage/sys.so",
         project = ".",
     )

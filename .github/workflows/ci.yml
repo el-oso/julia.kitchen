@@ -20,7 +20,13 @@ jobs:
       - name: Cache Julia packages
         uses: julia-actions/cache@v2
 
+      - name: Install CI dependencies
+        run: julia --project=ci -e 'using Pkg; Pkg.instantiate()'
+
       - name: Run example validator
+        env:
+          GKSwstype: nul        # GR backend: suppress display, write PNG directly
+          GR_NO_DISPLAY: "true"
         run: julia --project=ci ci/run_examples.jl
 
   build:

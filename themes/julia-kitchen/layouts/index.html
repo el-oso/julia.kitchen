@@ -5,12 +5,36 @@
   <a href="/recipes/" class="cta">Browse Recipes</a>
 </section>
 
-<section class="categories">
-  {{ range .Site.Taxonomies.categories.ByCount }}
-  <div class="category-card">
-    <h2><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }}</a></h2>
-    <p>{{ len .Pages }} recipes</p>
-  </div>
+<section class="home-sections">
+  {{ range (where .Site.Pages "Kind" "section").ByParam "weight" }}
+  {{ if .Parent }}{{ if eq .Parent.Kind "section" }}
+  <a class="section-card" href="{{ .RelPermalink }}">
+    <h2>{{ .Title }}</h2>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    <span class="section-count">{{ len .RegularPages }} recipes</span>
+  </a>
+  {{ end }}{{ end }}
   {{ end }}
+</section>
+
+<section class="home-feature">
+  <h2>How it works</h2>
+  <div class="feature-grid">
+    <div class="feature">
+      <span class="feature-icon">&#9654;</span>
+      <h3>Run in the browser</h3>
+      <p>Every code cell runs on a live Julia worker — no install needed.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">&#9998;</span>
+      <h3>Edit and experiment</h3>
+      <p>Click a cell to edit, then run your version. Reset restores the original.</p>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">&#10003;</span>
+      <h3>CI-validated</h3>
+      <p>Every recipe is automatically tested on every commit. Broken code doesn't merge.</p>
+    </div>
+  </div>
 </section>
 {{ end }}

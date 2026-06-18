@@ -1,15 +1,36 @@
 {{ define "main" }}
-<section class="recipe-list">
-  <h1>{{ .Title }}</h1>
-  {{ with .Content }}<div class="intro">{{ . }}</div>{{ end }}
-  <ul>
-    {{ range .Pages.ByParam "weight" }}
+<section class="section-page">
+  <header class="section-header">
+    <h1>{{ .Title }}</h1>
+    {{ with .Content }}<div class="section-intro">{{ . }}</div>{{ end }}
+  </header>
+
+  {{/* Top-level /recipes/ — show section cards */}}
+  {{ if .Sections }}
+  <div class="section-grid">
+    {{ range .Sections.ByParam "weight" }}
+    <a class="section-card" href="{{ .RelPermalink }}">
+      <h2>{{ .Title }}</h2>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+      <span class="section-count">{{ len .RegularPages }} recipes</span>
+    </a>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  {{/* Section with recipes — show recipe list */}}
+  {{ if .RegularPages }}
+  <ul class="recipe-list-items">
+    {{ range .RegularPages.ByParam "weight" }}
     <li>
-      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-      {{ with .Params.level }}<span class="level level-{{ . }}">{{ . }}</span>{{ end }}
+      <div class="recipe-list-meta">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ with .Params.level }}<span class="level level-{{ . }}">{{ . }}</span>{{ end }}
+      </div>
       {{ with .Description }}<p>{{ . }}</p>{{ end }}
     </li>
     {{ end }}
   </ul>
+  {{ end }}
 </section>
 {{ end }}
