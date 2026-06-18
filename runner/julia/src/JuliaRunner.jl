@@ -24,10 +24,28 @@ end
 # Plots.jl UUID — checked without importing Plots so the runner stays lightweight.
 const _PLOTS_UUID = Base.UUID("91a5bcdd-55d7-5caf-9e0b-520d859cae80")
 
-function _capture_plot()::String
-    plots = get(Base.loaded_modules,
-                Base.PkgId(_PLOTS_UUID, "Plots"),
-                nothing)
+# Returns the loaded Plots module, or nothing if it hasn't been imported yet.
+function _plots_module()
+    get(Base.loaded_modules, Base.PkgId(_PLOTS_UUID, "Plots"), nothing)
+end
+
+# Identity of the current Plots figure, or `nothing` if Plots isn't loaded /
+# there's no current plot. Used to detect whether a cell actually produced a
+# *new* plot — workers are long-lived and shared, so `Plots.current()` would
+# otherwise return a stale figure left over from an earlier plotting cell.
+function _current_plot_id(plots)::Union{UInt,Nothing}
+    plots === nothing && return nothing
+    try
+        fig = Base.invokelatest(plots.current)
+        fig === nothing && return nothing
+        return objectid(fig)
+    catch
+        return nothing
+    end
+end
+
+# Render the current Plots figure to a base64 PNG data URI.
+function _capture_plot(plots)::String
     plots === nothing && return ""
     try
         fig = Base.invokelatest(plots.current)
@@ -54,6 +72,12 @@ struct SandboxEvaluator <: AbstractEvaluator end
 
 function eval_code(::SandboxEvaluator, code::AbstractString)::EvalResult
     mod = Module(gensym("Cell"))
+
+    # Snapshot the current plot identity before running so we can tell whether
+    # this cell produced a new figure (vs. a stale one from an earlier cell on
+    # this long-lived worker).
+    plots_before = _plots_module()
+    plot_id_before = _current_plot_id(plots_before)
 
     orig_out = Base.stdout
     orig_err = Base.stderr
@@ -92,7 +116,16 @@ function eval_code(::SandboxEvaluator, code::AbstractString)::EvalResult
         err_str = isempty(err_str) ? caught : err_str * "\n" * caught
     end
 
-    image_data = isempty(caught) ? _capture_plot() : ""
+    # Only emit an image if this cell produced a new/changed figure. Plots may
+    # have been loaded *during* this cell (plots_before === nothing), so re-fetch.
+    image_data = ""
+    if isempty(caught)
+        plots_after = _plots_module()
+        plot_id_after = _current_plot_id(plots_after)
+        if plot_id_after !== nothing && plot_id_after != plot_id_before
+            image_data = _capture_plot(plots_after)
+        end
+    end
 
     EvalResult(out_str, err_str, elapsed_ms, image_data)
 end

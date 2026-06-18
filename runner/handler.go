@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -34,15 +35,31 @@ type errResponse struct {
 var (
 	limiters   = map[string]*rate.Limiter{}
 	limitersMu sync.Mutex
+
+	// Configured by configureRateLimit. Defaults match production: 5 req/min,
+	// burst 3. Set perMinute to 0 (via the -rate flag) to disable limiting,
+	// e.g. for local development.
+	ratePerMinute = 5
+	rateBurst     = 3
 )
 
+// configureRateLimit sets the per-IP request rate. perMinute <= 0 disables
+// rate limiting entirely. Call before serving.
+func configureRateLimit(perMinute, burst int) {
+	ratePerMinute = perMinute
+	rateBurst = burst
+}
+
+// limiter returns the per-IP limiter, or nil if rate limiting is disabled.
 func limiter(ip string) *rate.Limiter {
+	if ratePerMinute <= 0 {
+		return nil
+	}
 	limitersMu.Lock()
 	defer limitersMu.Unlock()
 	l, ok := limiters[ip]
 	if !ok {
-		// 5 requests per minute, burst of 3.
-		l = rate.NewLimiter(rate.Every(12*time.Second), 3)
+		l = rate.NewLimiter(rate.Every(time.Minute/time.Duration(ratePerMinute)), rateBurst)
 		limiters[ip] = l
 	}
 	return l
@@ -87,8 +104,8 @@ func runHandler(pool *Pool) http.HandlerFunc {
 		}
 
 		ip := clientIP(r)
-		if !limiter(ip).Allow() {
-			writeJSON(w, http.StatusTooManyRequests, errResponse{"rate limit: max 5 requests/minute"})
+		if l := limiter(ip); l != nil && !l.Allow() {
+			writeJSON(w, http.StatusTooManyRequests, errResponse{fmt.Sprintf("rate limit: max %d requests/minute", ratePerMinute)})
 			return
 		}
 

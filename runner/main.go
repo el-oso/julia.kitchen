@@ -26,7 +26,11 @@ func main() {
 	julia    := flag.String("julia", "julia", "Julia binary")
 	script   := flag.String("script", "", "path to julia/worker.jl (default: <binary dir>/julia/worker.jl)")
 	sysimage := flag.String("sysimage", "", "path to PackageCompiler sysimage .so (optional)")
+	ratePerMin := flag.Int("rate", 5, "per-IP requests per minute (0 = unlimited, e.g. for local dev)")
+	rateBurst  := flag.Int("burst", 3, "per-IP burst allowance")
 	flag.Parse()
+
+	configureRateLimit(*ratePerMin, *rateBurst)
 
 	workerScript := *script
 	if workerScript == "" {
