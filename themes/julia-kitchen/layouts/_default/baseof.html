@@ -36,6 +36,7 @@
       document.querySelectorAll(".julia-view code").forEach(el => hljs.highlightElement(el));
     });
   </script>
-  <script src="/js/runner.js" defer></script>
+  {{ $js := resources.Get "js/runner.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" defer></script>
 </body>
 </html>
