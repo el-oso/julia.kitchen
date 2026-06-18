@@ -1,5 +1,5 @@
 # Stage 1: build the Go server
-FROM golang:1.22-alpine AS go-build
+FROM golang:1.25-alpine AS go-build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
@@ -13,28 +13,12 @@ FROM julia:1.10 AS julia-sysimage
 WORKDIR /sysimage
 
 COPY julia/Project.toml julia/Manifest.toml* ./
+COPY build_sysimage.jl ./
 RUN julia --project=. -e 'import Pkg; Pkg.instantiate()'
 
-# Add PackageCompiler and the packages we want in the sysimage.
-# Extend this list as new recipe categories are added.
-RUN julia --project=. -e '
-    import Pkg
-    Pkg.add([
-        "PackageCompiler",
-        "Plots",
-        "StatsPlots",
-        "DataFrames",
-        "Statistics",
-        "LinearAlgebra",
-        "StatsBase",
-    ])
-    using PackageCompiler
-    create_sysimage(
-        [:JSON, :Plots, :StatsPlots, :DataFrames, :Statistics, :LinearAlgebra, :StatsBase],
-        sysimage_path = "/sysimage/sys.so",
-        project = ".",
-    )
-'
+# Add PackageCompiler and bake common packages into a sysimage.
+# Extend build_sysimage.jl as new recipe categories are added.
+RUN julia --project=. build_sysimage.jl
 
 # Stage 3: runtime image
 FROM julia:1.10-slim
