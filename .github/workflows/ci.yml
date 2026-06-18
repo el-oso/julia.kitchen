@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 jobs:
+  # ── Julia recipe validator ─────────────────────────────────────────────────
   validate:
     name: Validate Julia examples
     runs-on: ubuntu-latest
@@ -29,6 +30,48 @@ jobs:
           GR_NO_DISPLAY: "true"
         run: julia --project=ci ci/run_examples.jl
 
+  # ── Go runner ──────────────────────────────────────────────────────────────
+  go:
+    name: Build & test Go runner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: runner/go.mod
+          cache-dependency-path: runner/go.sum
+
+      - name: Build
+        working-directory: runner
+        run: go build -v ./...
+
+      - name: Vet
+        working-directory: runner
+        run: go vet ./...
+
+  # ── Docker image ───────────────────────────────────────────────────────────
+  docker:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    # Only build the Docker image on pushes to main (not every PR — it's slow)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: runner
+          push: false          # set to true + add registry login when ready to publish
+          tags: julia-kitchen/runner:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── Hugo site build ────────────────────────────────────────────────────────
   build:
     name: Build Hugo site
     runs-on: ubuntu-latest

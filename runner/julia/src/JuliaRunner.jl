@@ -2,6 +2,7 @@ module JuliaRunner
 
 using JSON
 using TypeContracts
+using Base64
 
 # ── Result type ────────────────────────────────────────────────────────────────
 
@@ -9,6 +10,7 @@ struct EvalResult
     stdout::String
     stderr::String
     elapsed_ms::Float64
+    image_data::String   # "data:image/png;base64,..." or ""
 end
 
 # ── Evaluator interface ────────────────────────────────────────────────────────
@@ -17,12 +19,36 @@ end
     eval_code(::Self, ::AbstractString)::EvalResult
 end
 
+# ── Plot capture ───────────────────────────────────────────────────────────────
+
+# Plots.jl UUID — checked without importing Plots so the runner stays lightweight.
+const _PLOTS_UUID = Base.UUID("91a5bcdd-55d7-5caf-9e0b-520d859cae80")
+
+function _capture_plot()::String
+    plots = get(Base.loaded_modules,
+                Base.PkgId(_PLOTS_UUID, "Plots"),
+                nothing)
+    plots === nothing && return ""
+    try
+        fig = Base.invokelatest(plots.current)
+        fig === nothing && return ""
+        path = tempname() * ".png"
+        Base.invokelatest(plots.savefig, fig, path)
+        data = base64encode(read(path))
+        rm(path; force=true)
+        return "data:image/png;base64," * data
+    catch
+        return ""
+    end
+end
+
 # ── SandboxEvaluator ───────────────────────────────────────────────────────────
 
 """
 Evaluates code in a fresh anonymous Module per request.
 Captures stdout/stderr via OS-level fd redirect to temp files — synchronous
 and reliable across Julia versions (avoids libuv async pipe close timing bugs).
+After eval, auto-captures any Plots.jl figure as a base64 PNG.
 """
 struct SandboxEvaluator <: AbstractEvaluator end
 
@@ -66,7 +92,9 @@ function eval_code(::SandboxEvaluator, code::AbstractString)::EvalResult
         err_str = isempty(err_str) ? caught : err_str * "\n" * caught
     end
 
-    EvalResult(out_str, err_str, elapsed_ms)
+    image_data = isempty(caught) ? _capture_plot() : ""
+
+    EvalResult(out_str, err_str, elapsed_ms, image_data)
 end
 
 # ── Worker serve loop ──────────────────────────────────────────────────────────
@@ -79,7 +107,7 @@ Read newline-delimited JSON requests from `proto_in`, evaluate each with
 
 Protocol:
   <- {"id": "<id>", "code": "<julia source>"}
-  -> {"id": "<id>", "stdout": "...", "stderr": "...", "elapsed_ms": 123.4}
+  -> {"id": "<id>", "stdout": "...", "stderr": "...", "elapsed_ms": 123.4, "image_data": "..."}
 """
 function serve(
     evaluator::AbstractEvaluator = SandboxEvaluator();
@@ -101,7 +129,7 @@ function serve(
         result = try
             eval_code(evaluator, req["code"])
         catch e
-            EvalResult("", sprint(showerror, e), 0.0)
+            EvalResult("", sprint(showerror, e), 0.0, "")
         end
 
         resp = JSON.json(Dict(
@@ -109,6 +137,7 @@ function serve(
             "stdout"     => result.stdout,
             "stderr"     => result.stderr,
             "elapsed_ms" => result.elapsed_ms,
+            "image_data" => result.image_data,
         ))
 
         println(proto_out, resp)

@@ -22,6 +22,7 @@ type runResponse struct {
 	Stdout    string  `json:"stdout"`
 	Stderr    string  `json:"stderr"`
 	ElapsedMs float64 `json:"elapsed_ms"`
+	ImageData string  `json:"image_data,omitempty"`
 }
 
 type errResponse struct {
@@ -116,6 +117,7 @@ func runHandler(pool *Pool) http.HandlerFunc {
 			Stdout:    result.Stdout,
 			Stderr:    result.Stderr,
 			ElapsedMs: result.ElapsedMs,
+			ImageData: result.ImageData,
 		})
 	})
 }

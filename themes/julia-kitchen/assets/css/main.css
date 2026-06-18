@@ -279,6 +279,16 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
   white-space: pre-wrap;
   margin-top: 0.25rem;
 }
+.plot-output {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #444;
+}
+.plot-img {
+  max-width: 100%;
+  border-radius: var(--radius);
+  display: block;
+}
 
 /* ── Notebook embed (Pluto / Bonito iframe) ───────────── */
 .notebook-embed {

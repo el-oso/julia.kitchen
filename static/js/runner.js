@@ -10,6 +10,8 @@ function initCell(cell) {
   const outputEl  = cell.querySelector(".julia-output");
   const stdoutEl  = outputEl.querySelector(".stdout");
   const stderrEl  = outputEl.querySelector(".stderr");
+  const plotEl    = outputEl.querySelector(".plot-output");
+  const plotImg   = outputEl.querySelector(".plot-img");
   const runBtn    = cell.querySelector(".run-btn");
   const editBtn   = cell.querySelector(".edit-btn");
   const resetBtn  = cell.querySelector(".reset-btn");
@@ -76,6 +78,8 @@ function initCell(cell) {
     outputEl.hidden = true;
     stdoutEl.textContent = "";
     stderrEl.textContent = "";
+    plotEl.hidden = true;
+    plotImg.src = "";
 
     // If in edit mode, leave it so the user sees output clearly
     if (!editorEl.hidden) leaveEditMode();
@@ -97,7 +101,11 @@ function initCell(cell) {
 
       stdoutEl.textContent = data.stdout || "";
       stderrEl.textContent = data.stderr || "";
-      if (data.stdout || data.stderr) outputEl.hidden = false;
+      if (data.image_data) {
+        plotImg.src = data.image_data;
+        plotEl.hidden = false;
+      }
+      if (data.stdout || data.stderr || data.image_data) outputEl.hidden = false;
 
     } catch (err) {
       stderrEl.textContent =
@@ -120,5 +128,7 @@ function initCell(cell) {
     outputEl.hidden = true;
     stdoutEl.textContent = "";
     stderrEl.textContent = "";
+    plotEl.hidden = true;
+    plotImg.src = "";
   });
 }

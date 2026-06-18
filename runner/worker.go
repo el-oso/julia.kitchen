@@ -28,6 +28,7 @@ type workerResponse struct {
 	Stdout    string  `json:"stdout"`
 	Stderr    string  `json:"stderr"`
 	ElapsedMs float64 `json:"elapsed_ms"`
+	ImageData string  `json:"image_data"`
 }
 
 func spawnWorker(args []string) (*Worker, error) {

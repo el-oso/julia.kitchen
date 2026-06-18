@@ -22,8 +22,6 @@ x = 0:0.1:2π
 y = sin.(x)
 
 plot(x, y; label="sin(x)", xlabel="x", ylabel="y", title="Sine wave", lw=2)
-savefig("/tmp/sine.png")
-println("Saved to /tmp/sine.png")
 {{< /julia >}}
 
 ## Scatter plot
@@ -43,8 +41,6 @@ scatter(x, y;
     alpha  = 0.7,
     ms     = 5,
 )
-savefig("/tmp/scatter.png")
-println("Saved to /tmp/scatter.png")
 {{< /julia >}}
 
 ## Histogram
@@ -65,8 +61,6 @@ histogram(data;
     color  = :steelblue,
 )
 println("mean=$(round(mean(data), digits=3))  std=$(round(std(data), digits=3))")
-savefig("/tmp/hist.png")
-println("Saved to /tmp/hist.png")
 {{< /julia >}}
 
 ## Multiple series on one plot
@@ -82,6 +76,4 @@ plot!(x, sin.(x) .* cos.(x); label="sin·cos", lw=2, color=:seagreen, ls=:dash)
 
 xlabel!("x")
 title!("Trig functions")
-savefig("/tmp/multi.png")
-println("Saved to /tmp/multi.png")
 {{< /julia >}}
