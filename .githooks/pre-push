@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Pre-push regression guard: runs the Julia recipe validator on recipe
+# Markdown that changed since the remote, so broken {{< julia >}} blocks never
+# reach origin. Validates ALL recipes if the validator or its env changed.
+#
+# Install once:  git config core.hooksPath .githooks
+# Skip once:     git push --no-verify
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+# Pick a base ref to diff against: the upstream branch, else origin/main, else
+# the previous commit (first push / no remote yet).
+base="origin/$(git rev-parse --abbrev-ref HEAD)"
+git rev-parse --verify "$base" >/dev/null 2>&1 || base="origin/main"
+git rev-parse --verify "$base" >/dev/null 2>&1 || base="HEAD~1"
+
+changed="$(git diff --name-only "$base"...HEAD 2>/dev/null || true)"
+
+# Validator or its environment changed → validate everything (pass no args).
+if echo "$changed" | grep -qE '^ci/(run_examples\.jl|Project\.toml|Manifest\.toml)$'; then
+  echo "pre-push: validator/env changed → validating ALL recipes"
+  GKSwstype=nul GR_NO_DISPLAY=true julia --project=ci ci/run_examples.jl
+  exit $?
+fi
+
+# Otherwise validate only changed recipe markdown.
+mapfile -t recipes < <(echo "$changed" | grep -E '^content/.*\.md$' || true)
+if [ "${#recipes[@]}" -eq 0 ]; then
+  echo "pre-push: no recipe changes to validate"
+  exit 0
+fi
+
+echo "pre-push: validating ${#recipes[@]} changed recipe(s)…"
+GKSwstype=nul GR_NO_DISPLAY=true julia --project=ci ci/run_examples.jl "${recipes[@]}"

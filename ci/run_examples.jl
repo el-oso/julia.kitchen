@@ -35,10 +35,19 @@ end
 
 function main()
     md_files = String[]
-    for (root, _, files) in walkdir(CONTENT_DIR)
-        for f in files
-            endswith(f, ".md") && push!(md_files, joinpath(root, f))
+    if isempty(ARGS)
+        # No args: validate every recipe under content/ (CI mode).
+        for (root, _, files) in walkdir(CONTENT_DIR)
+            for f in files
+                endswith(f, ".md") && push!(md_files, joinpath(root, f))
+            end
         end
+    else
+        # Args: validate only the given .md paths (fast local pre-push mode).
+        for a in ARGS
+            endswith(a, ".md") && isfile(a) && push!(md_files, abspath(a))
+        end
+        isempty(md_files) && (println("no .md files to validate"); return)
     end
 
     results = ExampleResult[]
