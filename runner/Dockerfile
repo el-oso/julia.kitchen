@@ -12,13 +12,19 @@ RUN CGO_ENABLED=0 go build -o /runner .
 FROM julia:1.10 AS julia-sysimage
 WORKDIR /sysimage
 
-COPY julia/Project.toml julia/Manifest.toml* ./
+# PackageCompiler requires a C compiler
+RUN apt-get update && apt-get install -y --no-install-recommends gcc g++ && rm -rf /var/lib/apt/lists/*
+
+# Copy the full JuliaRunner package (Pkg.instantiate needs the source)
+COPY julia/ ./julia/
 COPY build_sysimage.jl ./
-RUN julia --project=. -e 'import Pkg; Pkg.instantiate()'
+
+# Instantiate the Julia environment (downloads registered deps)
+RUN julia --project=julia -e 'import Pkg; Pkg.instantiate()'
 
 # Add PackageCompiler and bake common packages into a sysimage.
 # Extend build_sysimage.jl as new recipe categories are added.
-RUN julia --project=. build_sysimage.jl
+RUN julia --project=julia build_sysimage.jl
 
 # Stage 3: runtime image
 FROM julia:1.10-slim

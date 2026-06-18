@@ -12,5 +12,5 @@ using PackageCompiler
 create_sysimage(
     [:JSON, :Plots, :StatsPlots, :DataFrames, :Statistics, :LinearAlgebra, :StatsBase],
     sysimage_path = "/sysimage/sys.so",
-    project = ".",
+    project = "julia",
 )
