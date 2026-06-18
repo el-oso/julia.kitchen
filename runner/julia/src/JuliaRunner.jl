@@ -87,6 +87,25 @@ function _reset_shared_state!()
     return nothing
 end
 
+# ── Output cap ───────────────────────────────────────────────────────────────
+
+# Hard limit on captured stdout/stderr returned per cell. Bounds the response
+# size and memory regardless of how much a cell prints (a runaway loop is also
+# stopped by the execution timeout and the worker getting recycled).
+const MAX_OUTPUT_BYTES = 32_000
+
+function _read_capped(io::IO)::String
+    seek(io, 0)
+    data = read(io, MAX_OUTPUT_BYTES + 1)
+    length(data) <= MAX_OUTPUT_BYTES && return String(data)
+    # Trim back to the last valid UTF-8 boundary so the result stays encodable.
+    n = MAX_OUTPUT_BYTES
+    while n > 0 && !isvalid(String(@view data[1:n]))
+        n -= 1
+    end
+    return String(@view data[1:n]) * "\n… [output truncated]"
+end
+
 # ── SandboxEvaluator ───────────────────────────────────────────────────────────
 
 """
@@ -133,10 +152,8 @@ function eval_code(::SandboxEvaluator, code::AbstractString)::EvalResult
     redirect_stdout(orig_out)
     redirect_stderr(orig_err)
 
-    seek(out_io, 0)
-    seek(err_io, 0)
-    out_str = read(out_io, String)
-    err_str = read(err_io, String)
+    out_str = _read_capped(out_io)
+    err_str = _read_capped(err_io)
 
     close(out_io)
     close(err_io)

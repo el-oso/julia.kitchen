@@ -1,7 +1,10 @@
-{{/* Embeds a live BonitoBook route in an iframe.
-     Usage: {{< bonitobook "broadcasting" "Optional iframe title" >}}
-     Base URL configurable via params.bonitoServerURL (see hugo.toml). */}}
-{{ $nb   := .Get 0 }}
+{{/* Embeds the live Bonito + WGLMakie demo. Its editable formula is eval'd in
+     the Bonito server process with NO sandbox, so the live embed is shown only
+     in local dev (`hugo server`) or when params.enableLiveEditors is explicitly
+     true. In a normal production build a static placeholder is shown instead. */}}
+{{ $nb := .Get 0 }}
+{{ $enabled := or .Site.Params.enableLiveEditors hugo.IsServer }}
+{{ if $enabled }}
 {{ $base := .Site.Params.bonitoServerURL | default "http://localhost:8773" }}
 <div class="notebook-embed" data-pagefind-ignore>
   <iframe src="{{ $base }}/{{ $nb }}"
@@ -10,3 +13,9 @@
           scrolling="no"
           sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
+{{ else }}
+<div class="embed-disabled" data-pagefind-ignore>
+  This live Bonito&nbsp;+&nbsp;WGLMakie editor runs only in local development
+  (it evaluates edited code without a sandbox). See <code>CLAUDE.md</code> to run it.
+</div>
+{{ end }}

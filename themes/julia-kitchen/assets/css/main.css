@@ -392,6 +392,17 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
   margin-left: 0.5rem;
 }
 
+/* ── Disabled embed placeholder (live editors off in prod) ── */
+.embed-disabled {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 /* ── Notebook embed (Pluto / Bonito iframe) ───────────── */
 /* Height is set by runner.js from the iframe's own postMessage report, so the
    embed grows to fit its content instead of scrolling inside a fixed box. */

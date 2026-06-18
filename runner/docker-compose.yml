@@ -1,0 +1,66 @@
+# Hardened deployment for the Julia runner.
+#
+# The runner executes untrusted user code, so the container is locked down:
+#  - non-root, no new privileges, all Linux capabilities dropped
+#  - read-only root filesystem; only small tmpfs mounts are writable
+#  - Julia writes new precompilation to a tmpfs depot layered OVER the baked,
+#    read-only package depot (JULIA_DEPOT_PATH = writable:readonly)
+#  - memory / CPU / PID limits cap a single abusive cell
+#  - the runner sits on an INTERNAL network with no internet egress; only the
+#    edge proxy can reach it. User code therefore cannot phone home / exfiltrate.
+#
+# Bring up:  docker compose -f runner/docker-compose.yml up --build
+#
+# NOTE: in-container isolation is defense-in-depth, not a perfect jail. For
+# stronger isolation run under gVisor (runsc) or per-eval microVMs.
+
+services:
+  runner:
+    build: .
+    # Reachable only via the edge proxy on the internal network.
+    networks:
+      - sandbox
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /home/runner/.julia-rw:size=256m,mode=0700
+    environment:
+      # First depot is the writable tmpfs (new precompile cache); the baked
+      # depot is read-only fallback. Keeps a read-only rootfs working.
+      JULIA_DEPOT_PATH: "/home/runner/.julia-rw:/home/runner/.julia"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 256
+    mem_limit: 1g
+    cpus: 1.0
+    restart: unless-stopped
+    # -rate is the per-IP request limit (5/min default). Tune for your traffic.
+    command: ["-sysimage", "/app/sys.so", "-pool", "4", "-timeout", "10", "-rate", "5"]
+
+  # Edge proxy: terminates TLS and is the ONLY thing that can reach the runner.
+  # Bridges the public network and the internal sandbox network.
+  proxy:
+    image: caddy:2
+    depends_on:
+      - runner
+    networks:
+      - public
+      - sandbox
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    restart: unless-stopped
+
+networks:
+  public: {}
+  sandbox:
+    # No route to the internet: blocks outbound network from user code.
+    internal: true
+
+volumes:
+  caddy_data: {}

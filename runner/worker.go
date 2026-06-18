@@ -5,10 +5,31 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"sync"
 	"time"
 )
+
+// workerEnv returns a minimal, allowlisted environment for a Julia worker, so
+// untrusted user code cannot read the host process's environment (API keys,
+// tokens, etc.). Only what Julia needs to start and run headless is passed
+// through; everything else is dropped.
+func workerEnv() []string {
+	env := []string{
+		"JULIA_NUM_THREADS=1", // no extra compute threads for user code
+		"GKSwstype=nul",       // headless GR
+		"GR_NO_DISPLAY=true",
+		"TERM=dumb",
+	}
+	// Pass through only the few host vars Julia needs to locate itself/its depot.
+	for _, key := range []string{"PATH", "HOME", "LANG", "LC_ALL", "JULIA_DEPOT_PATH"} {
+		if v, ok := os.LookupEnv(key); ok {
+			env = append(env, key+"="+v)
+		}
+	}
+	return env
+}
 
 type Worker struct {
 	cmd    *exec.Cmd
@@ -33,6 +54,7 @@ type workerResponse struct {
 
 func spawnWorker(args []string) (*Worker, error) {
 	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Env = workerEnv() // minimal env — don't leak host secrets to user code
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {

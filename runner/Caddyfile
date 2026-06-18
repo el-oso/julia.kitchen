@@ -1,0 +1,23 @@
+# Edge proxy for the Julia runner. Terminates HTTPS (auto certs via Let's
+# Encrypt) and forwards to the runner on the internal network. Replace the
+# site address with your real hostname before deploying.
+#
+# The site's window.JULIA_RUNNER_URL should point at https://<this host>.
+
+runner.julia.kitchen {
+	encode zstd gzip
+
+	# Only the run + health endpoints are exposed.
+	@api path /api/* /health
+	handle @api {
+		reverse_proxy runner:8080
+	}
+
+	# Everything else: 404 (the proxy is not a general file server).
+	handle {
+		respond "not found" 404
+	}
+
+	# Coarse edge rate limit is enforced in the runner (-rate); add a WAF or
+	# Cloudflare in front for IP reputation / bot filtering if needed.
+}

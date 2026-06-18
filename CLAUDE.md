@@ -94,6 +94,17 @@ GKSwstype=nul julia --project=ci ci/run_examples.jl content/recipes/basics/varia
   `Base64 = "1.11.0"` bound once broke the Docker build on a different Julia.
 - **Manifests are gitignored** (`runner/julia`, notebook envs); Docker resolves fresh.
 
+## Security (see SECURITY.md)
+
+- The **Go runner** is the only backend safe to expose: minimal worker env (no
+  host secrets leak to user code), 32 KB output cap, single-thread, timeout +
+  worker recycling + rate limit, and a hardened container
+  (`runner/docker-compose.yml`: read-only FS, cap-drop, no egress, resource limits).
+- The **Bonito editor** and **Pluto editor** `eval` visitor code with no sandbox.
+  Their embeds/links render only under `hugo server` or when
+  `params.enableLiveEditors = true`; a production `hugo --minify` build hides
+  them (placeholder shown). Don't expose them publicly without sandboxing + auth.
+
 ## Git
 
 - End commit messages with `Co-Authored-By: Claude <noreply@anthropic.com>`.
