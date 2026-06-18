@@ -1,0 +1,11 @@
+{{/* Embeds a live PlutoSliderServer notebook in an iframe.
+     Usage: {{< notebook "broadcasting_slider" "Optional iframe title" >}}
+     The base URL is configurable via params.sliderServerURL (see hugo.toml). */}}
+{{ $nb   := .Get 0 }}
+{{ $base := .Site.Params.sliderServerURL | default "http://localhost:2345" }}
+<div class="notebook-embed">
+  <iframe src="{{ $base }}/{{ $nb }}.html"
+          title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive Julia notebook{{ end }}"
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin"></iframe>
+</div>

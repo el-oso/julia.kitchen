@@ -6,6 +6,10 @@ theme = "julia-kitchen"
 [params]
   description = "Recipes for Julia programmers — from basics to advanced"
   juliaVersion = "1.12"
+  # Base URL of the live PlutoSliderServer that serves interactive notebooks.
+  # Dev default below; in production set this to the deployed HTTPS host
+  # (must be HTTPS or the browser blocks the iframe as mixed content).
+  sliderServerURL = "http://localhost:2345"
 
   # Giscus comments — fill in after creating the GitHub repo and installing
   # the Giscus app (https://giscus.app). Set comments = true in recipe front matter to enable.
