@@ -27,7 +27,7 @@ RUN julia --project=julia -e 'import Pkg; Pkg.instantiate()'
 RUN julia --project=julia build_sysimage.jl
 
 # Stage 3: runtime image
-FROM julia:1.10-slim
+FROM julia:1.10
 WORKDIR /app
 
 COPY --from=go-build /runner ./runner
@@ -36,6 +36,12 @@ COPY julia/ ./julia/
 
 # Non-root user for sandboxing
 RUN useradd -m -s /bin/sh runner
+
+# Copy the Julia package depot from the build stage so the runner user
+# can access installed packages (JSON.jl, TypeContracts.jl, Plots.jl, etc.)
+COPY --from=julia-sysimage /root/.julia /home/runner/.julia
+RUN chown -R runner:runner /home/runner/.julia /app
+
 USER runner
 
 EXPOSE 8080
