@@ -2,7 +2,7 @@
 title: "Broadcasting — Interactive"
 description: "Explore how frequency and phase transform sin waves with live sliders"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 5
 categories: ["numerics"]
 tags: ["broadcasting", "interactive", "pluto", "visualisation"]

@@ -5,7 +5,7 @@ theme = "julia-kitchen"
 
 [params]
   description = "Recipes for Julia programmers — from basics to advanced"
-  juliaVersion = "1.10"
+  juliaVersion = "1.12"
 
   # Giscus comments — fill in after creating the GitHub repo and installing
   # the Giscus app (https://giscus.app). Set comments = true in recipe front matter to enable.

@@ -2,7 +2,7 @@
 title: "Functions"
 description: "Defining functions, multiple dispatch, and anonymous functions in Julia"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 2
 categories: ["basics"]
 tags: ["functions", "dispatch", "closures"]

@@ -2,7 +2,7 @@
 title: "Plot Customisation"
 description: "Colours, markers, line styles, fonts, themes, and annotations"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 3
 categories: ["plotting"]
 tags: ["plots", "styling", "themes", "annotations", "colours"]

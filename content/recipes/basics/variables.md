@@ -2,7 +2,7 @@
 title: "Variables & Types"
 description: "How Julia handles variables, type inference, and basic data types"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 1
 categories: ["basics"]
 tags: ["variables", "types", "inference"]

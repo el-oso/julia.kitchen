@@ -2,7 +2,7 @@
 title: "Statistics"
 description: "Descriptive statistics, distributions, and random sampling with Julia's standard library"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 4
 categories: ["numerics"]
 tags: ["statistics", "distributions", "random", "sampling"]

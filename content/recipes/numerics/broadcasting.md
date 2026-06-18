@@ -2,7 +2,7 @@
 title: "Broadcasting"
 description: "Apply any function element-wise to arrays of any shape with the dot syntax"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 2
 categories: ["numerics"]
 tags: ["broadcasting", "dot syntax", "vectorisation", "fusion"]

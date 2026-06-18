@@ -10,7 +10,7 @@ All code blocks must pass `julia ci/run_examples.jl` before a PR will be accepte
 title: "Short, noun-phrase title"           # e.g. "Sorting Arrays"
 description: "One sentence, 10-15 words"   # shown in listings and meta
 level: "beginner"                           # beginner | intermediate | advanced
-julia_version: "1.10"                      # minimum Julia version for the recipe
+julia_version: "1.12"                      # minimum Julia version for the recipe
 weight: 10                                  # controls order within section (lower = first)
 categories: ["numerics"]                    # pick one: basics | numerics | plotting | data | packages
 tags: ["sorting", "arrays"]                # 2-5 keywords, lowercase

@@ -2,7 +2,7 @@
 title: "Arrays"
 description: "Creating, indexing, and slicing Julia arrays — 1-based, column-major, and fast"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 1
 categories: ["numerics"]
 tags: ["arrays", "indexing", "slicing", "comprehensions"]

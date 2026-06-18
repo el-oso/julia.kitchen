@@ -2,7 +2,7 @@
 title: "Subplots and Layouts"
 description: "Arrange multiple plots side-by-side or in a grid with the layout keyword"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 2
 categories: ["plotting"]
 tags: ["plots", "subplots", "layout", "grid"]

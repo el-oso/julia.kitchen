@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 go build -o /runner .
 # Stage 2: build the Julia sysimage
 # Using the official Julia image; bakes common packages into a sysimage so
 # `using Plots` inside a worker takes ~0.5s instead of ~20s.
-FROM julia:1.10 AS julia-sysimage
+FROM julia:1.12 AS julia-sysimage
 WORKDIR /sysimage
 
 # PackageCompiler requires a C compiler
@@ -27,7 +27,7 @@ RUN julia --project=julia -e 'import Pkg; Pkg.instantiate()'
 RUN julia --project=julia build_sysimage.jl
 
 # Stage 3: runtime image
-FROM julia:1.10
+FROM julia:1.12
 WORKDIR /app
 
 COPY --from=go-build /runner ./runner

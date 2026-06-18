@@ -2,7 +2,7 @@
 title: "{{ replace .File.ContentBaseName "-" " " | title }}"
 description: ""
 level: "beginner"        # beginner | intermediate | advanced
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 99
 categories: []
 tags: []

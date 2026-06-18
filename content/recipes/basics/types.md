@@ -2,7 +2,7 @@
 title: "Types & Structs"
 description: "Defining custom types, abstract types, and the Julia type hierarchy"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 3
 categories: ["basics"]
 tags: ["types", "structs", "abstract", "dispatch"]

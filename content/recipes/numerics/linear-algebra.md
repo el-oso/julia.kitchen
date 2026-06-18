@@ -2,7 +2,7 @@
 title: "Linear Algebra"
 description: "Matrix operations, decompositions, and solvers using Julia's built-in LinearAlgebra"
 level: "intermediate"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 3
 categories: ["numerics"]
 tags: ["linear algebra", "matrices", "decompositions", "solvers"]

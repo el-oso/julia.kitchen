@@ -2,7 +2,7 @@
 title: "Your First Plot"
 description: "Draw lines, scatter plots, and histograms in three lines of code"
 level: "beginner"
-julia_version: "1.10"
+julia_version: "1.12"
 weight: 1
 categories: ["plotting"]
 tags: ["plots", "line", "scatter", "histogram", "basics"]
