@@ -11,7 +11,6 @@ StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 TypeContracts = "c7a3f1e2-84b5-4d69-9e0a-1f2b3c4d5e6f"
 
 [compat]
-Base64 = "1.11.0"
 JSON = "1.6.1"
 Plots = "1.41.6"
 StatsPlots = "0.15.8"
