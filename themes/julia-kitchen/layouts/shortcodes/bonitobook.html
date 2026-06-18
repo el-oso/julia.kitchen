@@ -5,7 +5,8 @@
 {{ $base := .Site.Params.bonitoServerURL | default "http://localhost:8773" }}
 <div class="notebook-embed">
   <iframe src="{{ $base }}/{{ $nb }}"
-          title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive BonitoBook notebook{{ end }}"
+          title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive Bonito + WGLMakie demo{{ end }}"
           loading="lazy"
+          scrolling="no"
           sandbox="allow-scripts allow-same-origin"></iframe>
 </div>

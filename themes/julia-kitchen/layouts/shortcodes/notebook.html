@@ -7,5 +7,6 @@
   <iframe src="{{ $base }}/{{ $nb }}.html"
           title="{{ with .Get 1 }}{{ . }}{{ else }}Interactive Julia notebook{{ end }}"
           loading="lazy"
+          scrolling="no"
           sandbox="allow-scripts allow-same-origin"></iframe>
 </div>

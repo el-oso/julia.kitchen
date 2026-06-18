@@ -350,18 +350,22 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
 }
 
 /* ── Notebook embed (Pluto / Bonito iframe) ───────────── */
+/* Height is set by runner.js from the iframe's own postMessage report, so the
+   embed grows to fit its content instead of scrolling inside a fixed box. */
 .notebook-embed {
   margin: 2rem 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  background: #1e1e2e;
+  background: var(--surface);
 }
 .notebook-embed iframe {
   width: 100%;
-  min-height: 520px;
+  height: 420px;            /* initial height before the iframe reports its own */
   border: none;
   display: block;
+  overflow: hidden;
+  transition: height 0.15s ease;
 }
 
 /* ── Footer ───────────────────────────────────────────── */

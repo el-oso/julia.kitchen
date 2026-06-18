@@ -63,6 +63,26 @@ y = sin.(freq .* x .+ phase)
 The dot `.` before `sin`, `.*`, and `.+` broadcasts each operation across every element of `x` in a single fused loop — no explicit `for`, no temporaries.
 """
 
+# ╔═╡ b0000000-0000-4000-8000-000000000001
+# Auto-size this notebook inside the site's iframe: relax Pluto's full-viewport
+# min-height and report our real content height to the embedding page.
+HTML("""
+<style>
+  html, body, pluto-editor, pluto-notebook, main {
+    min-height: 0 !important; height: auto !important;
+  }
+  body { overflow: hidden !important; }
+</style>
+<script>
+  const report = () => parent.postMessage(
+    { type: "embed-height", height: Math.ceil(document.documentElement.getBoundingClientRect().height) },
+    "*");
+  if (window.ResizeObserver) new ResizeObserver(report).observe(document.documentElement);
+  window.addEventListener("load", report);
+  setTimeout(report, 600); setTimeout(report, 2000); setTimeout(report, 4000);
+</script>
+""")
+
 # ╔═╡ Cell order:
 # ╠═a93a59d8-6b36-11f1-a0a5-8d7d98e19e56
 # ╠═a93a5a16-6b36-11f1-9189-97f1529b5098
@@ -70,3 +90,4 @@ The dot `.` before `sin`, `.*`, and `.+` broadcasts each operation across every 
 # ╠═a93a5a1e-6b36-11f1-a8e5-1bb606036a8a
 # ╠═a93a5a28-6b36-11f1-8640-b572fcf663e3
 # ╠═a93a5a28-6b36-11f1-ac63-fbfededdb231
+# ╟─b0000000-0000-4000-8000-000000000001

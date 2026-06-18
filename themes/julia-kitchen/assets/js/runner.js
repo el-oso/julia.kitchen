@@ -5,6 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".runner-slider").forEach(initSliderDemo);
 });
 
+// Auto-size embedded notebook iframes (Pluto / Bonito). They're cross-origin,
+// so the iframe content reports its own height via postMessage; we match the
+// message to its iframe and set the height — no inner scrollbar, grows to fit.
+window.addEventListener("message", (e) => {
+  const d = e.data;
+  if (!d || d.type !== "embed-height" || typeof d.height !== "number") return;
+  document.querySelectorAll(".notebook-embed iframe").forEach((frame) => {
+    if (frame.contentWindow === e.source) {
+      frame.style.height = (d.height + 4) + "px";
+    }
+  });
+});
+
 // Slider-driven demo: re-run a parameterized code template through the Go
 // runner on each slider change (debounced) and show the returned plot PNG.
 function initSliderDemo(root) {
