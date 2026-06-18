@@ -12,6 +12,10 @@ theme = "julia-kitchen"
   sliderServerURL = "http://localhost:2345"
   # Base URL of the live BonitoBook server (WGLMakie demos). Same HTTPS caveat.
   bonitoServerURL = "http://localhost:8773"
+  # Live Pluto editor (notebooks/edit.jl) for "Launch editable notebook" links.
+  # plutoEditNotebook is the server-side path Pluto opens; local-dev default below.
+  plutoEditURL = "http://localhost:1234"
+  plutoEditNotebook = "/home/el_oso/Documents/julia.kitchen/notebooks/src/broadcasting_slider.jl"
 
   # Giscus comments — fill in after creating the GitHub repo and installing
   # the Giscus app (https://giscus.app). Set comments = true in recipe front matter to enable.

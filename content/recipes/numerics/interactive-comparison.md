@@ -22,6 +22,8 @@ the new state. Plot is a server-rendered GR PNG.
 
 {{< notebook "broadcasting_slider" "Broadcasting — Pluto" >}}
 
+{{< pluto-edit >}}
+
 ## 2. Bonito + WGLMakie
 
 A Bonito `App` (the same stack BonitoBook is built on, without the notebook

@@ -349,6 +349,23 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
   margin-top: 0.4rem;
 }
 
+/* ── "Launch editable notebook" link ───────────────────── */
+.pluto-edit-link {
+  margin: -1rem 0 1.5rem;
+  font-size: 0.9rem;
+}
+.pluto-edit-link a {
+  font-weight: 600;
+  color: var(--julia-purple);
+  text-decoration: none;
+}
+.pluto-edit-link a:hover { text-decoration: underline; }
+.pluto-edit-note {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
 /* ── Notebook embed (Pluto / Bonito iframe) ───────────── */
 /* Height is set by runner.js from the iframe's own postMessage report, so the
    embed grows to fit its content instead of scrolling inside a fixed box. */

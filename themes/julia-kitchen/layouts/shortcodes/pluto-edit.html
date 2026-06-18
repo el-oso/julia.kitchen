@@ -1,0 +1,11 @@
+{{/* "Launch editable notebook" link → live Pluto editor (notebooks/edit.jl).
+     Usage: {{< pluto-edit >}}  (opens the configured notebook)
+            {{< pluto-edit "/abs/path/to/other.jl" >}}  (override the path)
+     Configured via params.plutoEditURL and params.plutoEditNotebook. */}}
+{{ $base := .Site.Params.plutoEditURL | default "http://localhost:1234" }}
+{{ $path := or (.Get 0) (.Site.Params.plutoEditNotebook) }}
+<p class="pluto-edit-link">
+  <a href="{{ $base }}{{ with $path }}/open?path={{ . | urlquery }}{{ end }}"
+     target="_blank" rel="noopener">Launch editable notebook&nbsp;&#8599;</a>
+  <span class="pluto-edit-note">opens the live Pluto editor in a new tab</span>
+</p>

@@ -41,15 +41,19 @@ All three need a live Julia process for the *compute* step. See
 cd runner && go build -o runner_bin . && \
   ./runner_bin -pool 2 -rate 0 -script ./julia/bin/worker.jl
 
-# Pluto slider server (first run is slow — runs the notebooks)
+# Pluto slider server — read-only embeds, grow-to-fit (first run is slow)
 PLUTO_PORT=2345 julia --project=notebooks/env notebooks/serve.jl
 
-# BonitoBook server
+# Bonito server — compact App, editable y-formula + WGLMakie
 BONITO_PORT=8773 julia --project=notebooks/bonito/env notebooks/bonito/serve.jl
+
+# Live Pluto editor — backs the "Launch editable notebook" links (single-kernel,
+# secrets disabled → local/demo only, NOT multi-user-safe)
+PLUTO_EDIT_PORT=1234 julia --project=notebooks/env notebooks/edit.jl
 ```
 
 Health checks: `curl localhost:8080/health`, `curl -sI localhost:2345/`,
-`curl -sI localhost:8773/broadcasting`.
+`curl -sI localhost:8773/broadcasting`, `curl -sI localhost:1234/`.
 
 The runner/Pluto/Bonito server URLs are configurable via `window.JULIA_RUNNER_URL`
 and Hugo params `sliderServerURL` / `bonitoServerURL` (dev defaults are localhost).

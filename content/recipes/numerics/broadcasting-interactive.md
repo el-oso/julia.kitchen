@@ -13,6 +13,8 @@ This is an interactive Pluto notebook exploring the broadcasting dot-syntax with
 
 {{< notebook "broadcasting_slider" "Broadcasting interactive demo" >}}
 
+{{< pluto-edit >}}
+
 ## What's happening under the hood
 
 The notebook uses `@bind` from **PlutoUI.jl** to connect HTML sliders to Julia variables. Every time a slider moves, Pluto re-evaluates all cells that depend on it.
