@@ -13,6 +13,11 @@ Manifest.toml
 # Go
 /runner/julia-runner
 runner/julia-runner
+/runner/runner_bin
+/runner/runner
+
+# Local dev server logs/pids (./start.sh, ./stop.sh)
+/log/
 
 # Notebooks baked output (generated, not source)
 /static/notebooks/*.html
