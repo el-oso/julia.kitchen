@@ -30,10 +30,18 @@ type errResponse struct {
 	Error string `json:"error"`
 }
 
-// Per-IP rate limiters. The map grows without bound — fine for a small site;
-// add a cleanup sweep if traffic warrants it.
+// idleEvict is how long an IP's limiter is kept after its last request before
+// the sweeper reclaims it, bounding the map under high unique-IP traffic.
+const idleEvict = 10 * time.Minute
+
+type ipLimiter struct {
+	*rate.Limiter
+	lastSeen time.Time
+}
+
+// Per-IP rate limiters, reclaimed by sweepLimiters after idleEvict of silence.
 var (
-	limiters   = map[string]*rate.Limiter{}
+	limiters   = map[string]*ipLimiter{}
 	limitersMu sync.Mutex
 
 	// Configured by configureRateLimit. Defaults match production: 5 req/min,
@@ -48,6 +56,23 @@ var (
 func configureRateLimit(perMinute, burst int) {
 	ratePerMinute = perMinute
 	rateBurst = burst
+	if perMinute > 0 {
+		go sweepLimiters()
+	}
+}
+
+// sweepLimiters periodically drops limiters for IPs idle longer than idleEvict,
+// so the map can't grow without bound (e.g. under spoofed/rotating source IPs).
+func sweepLimiters() {
+	for range time.Tick(idleEvict) {
+		limitersMu.Lock()
+		for ip, l := range limiters {
+			if time.Since(l.lastSeen) > idleEvict {
+				delete(limiters, ip)
+			}
+		}
+		limitersMu.Unlock()
+	}
 }
 
 // limiter returns the per-IP limiter, or nil if rate limiting is disabled.
@@ -59,19 +84,28 @@ func limiter(ip string) *rate.Limiter {
 	defer limitersMu.Unlock()
 	l, ok := limiters[ip]
 	if !ok {
-		l = rate.NewLimiter(rate.Every(time.Minute/time.Duration(ratePerMinute)), rateBurst)
+		l = &ipLimiter{Limiter: rate.NewLimiter(rate.Every(time.Minute/time.Duration(ratePerMinute)), rateBurst)}
 		limiters[ip] = l
 	}
-	return l
+	l.lastSeen = time.Now()
+	return l.Limiter
 }
 
+// clientIP returns the requester's IP for rate limiting. The runner only ever
+// receives traffic from the trusted edge proxy (Caddy), which APPENDS the real
+// client to X-Forwarded-For — so the last entry is the one Caddy saw and the
+// only one a client can't spoof. Reading the first (leftmost) entry instead
+// would let anyone bypass the per-IP limit by sending a random X-Forwarded-For
+// on every request. ponytail: single trusted proxy assumed; if you add more
+// hops, count from the right by the number of trusted proxies.
 func clientIP(r *http.Request) string {
 	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		first := strings.TrimSpace(strings.SplitN(xff, ",", 2)[0])
-		if ip, _, err := net.SplitHostPort(first); err == nil {
+		parts := strings.Split(xff, ",")
+		last := strings.TrimSpace(parts[len(parts)-1])
+		if ip, _, err := net.SplitHostPort(last); err == nil {
 			return ip
 		}
-		return first
+		return last
 	}
 	host, _, _ := net.SplitHostPort(r.RemoteAddr)
 	return host

@@ -46,4 +46,10 @@ USER runner
 
 EXPOSE 8080
 
+# ⚠ EGRESS IS NOT ENFORCED BY THIS IMAGE. It runs untrusted user code, which can
+# open sockets / shell out. A Dockerfile cannot set network policy — that is a
+# runtime flag. Do NOT `docker run` this image on a network with internet access.
+# Run it only via runner/docker-compose.yml (internal, egress-blocked network),
+# or launch with an equivalent isolated network (e.g. `--network none` behind a
+# proxy, or an egress firewall). See SECURITY.md.
 ENTRYPOINT ["/app/runner", "-sysimage", "/app/sys.so", "-pool", "4", "-timeout", "10"]
